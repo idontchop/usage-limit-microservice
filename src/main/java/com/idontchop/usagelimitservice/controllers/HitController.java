@@ -17,8 +17,8 @@ public class HitController {
 	
 	@PostMapping("/hit")
 	public RestMessage hit(@RequestBody Hit hit) {
-		hitService.addHit(hit);
-		return RestMessage.empty();
+		return hitService.addHit(hit);
+		
 	}
 
 }

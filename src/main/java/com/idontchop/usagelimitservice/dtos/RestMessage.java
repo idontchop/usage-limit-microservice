@@ -24,6 +24,12 @@ public class RestMessage {
 		return new RestMessage(message);
 	}
 	
+	public static RestMessage build ( Map<String,String> messages) {
+		RestMessage rm = new RestMessage();
+		rm.setMessages(messages);
+		return rm;
+	}
+	
 	public static RestMessage empty() {
 		return new RestMessage();
 	}

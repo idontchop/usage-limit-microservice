@@ -1,6 +1,7 @@
 package com.idontchop.usagelimitservice.entities;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,9 +24,13 @@ public class Hit {
 	@NotEmpty
 	private String hitType;		// Arbitrary, must match a hittype to be counted
 	
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date created = new Date();
+	private long numHits = 0L;	// one row per second in DB
+	
+	private LocalDateTime created = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
 
+	public void incrementHits() {
+		numHits++;
+	}
 	public long getId() {
 		return id;
 	}
@@ -50,13 +55,22 @@ public class Hit {
 		this.hitType = hitType;
 	}
 
-	public Date getCreated() {
+	public LocalDateTime getCreated() {
 		return created;
 	}
 
-	public void setCreated(Date created) {
+	public void setCreated(LocalDateTime created) {
 		this.created = created;
 	}
+
+	public long getNumHits() {
+		return numHits;
+	}
+
+	public void setNumHits(long numHits) {
+		this.numHits = numHits;
+	}
+
 
 	
 
