@@ -1,0 +1,33 @@
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/usage_limit_service
+    username: usage_limit
+    password: 1234
+  data:
+    rest:
+      basePath: /data
+  application:
+    name: usage-limit-service
+server:
+  port: ${PORT:9450}
+eureka:
+  instance:
+    hostname: localhost
+    metadataMap:
+      zone: zone1
+logging:
+  level:
+    hibernate:
+      SQL: DEBUG
+      type: TRACE
+    org:
+      springframework: DEBUG
+
+    com: debug
