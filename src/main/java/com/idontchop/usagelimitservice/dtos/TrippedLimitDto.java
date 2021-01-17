@@ -1,5 +1,6 @@
 package com.idontchop.usagelimitservice.dtos;
 
+import com.idontchop.usagelimitservice.entities.HardLimit;
 import com.idontchop.usagelimitservice.entities.ParentLimit;
 import com.idontchop.usagelimitservice.entities.UsageType;
 
@@ -12,6 +13,8 @@ public class TrippedLimitDto {
 	public String typeTitle;
 	public String limitName;
 	
+	public boolean hardLimit = false;
+	
 	public static TrippedLimitDto set(UsageType usageType, ParentLimit limit, String user) {
 		TrippedLimitDto dto = new TrippedLimitDto();
 		dto.user = user;
@@ -20,6 +23,9 @@ public class TrippedLimitDto {
 		dto.type = usageType.getName();
 		dto.typeTitle = usageType.getTitle();
 		dto.limitName = limit.getName();
+		
+		// sets a boolean if hard limit
+		if ( limit instanceof HardLimit) dto.hardLimit = true;
 		
 		return dto;
 		
@@ -76,6 +82,14 @@ public class TrippedLimitDto {
 
 	public void setLimitName(String limitName) {
 		this.limitName = limitName;
+	}
+
+	public boolean isHardLimit() {
+		return hardLimit;
+	}
+
+	public void setHardLimit(boolean hardLimit) {
+		this.hardLimit = hardLimit;
 	}
 	
 	

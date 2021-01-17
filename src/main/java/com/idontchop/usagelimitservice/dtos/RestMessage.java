@@ -54,6 +54,8 @@ public class RestMessage {
 		this.messages = messages;
 	}
 
-	
+	public boolean isEmpty() {
+		return messages.isEmpty();
+	}
 }
 

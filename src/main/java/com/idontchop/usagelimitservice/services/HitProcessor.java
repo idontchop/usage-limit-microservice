@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.idontchop.usagelimitservice.dtos.RestMessage;
@@ -26,6 +27,13 @@ import com.idontchop.usagelimitservice.repositories.HitRepository;
  *
  */
 public class HitProcessor {
+	
+	// Error Messages
+	@Value("${hitProcessorMessages.hardlimitreachedtitle")
+	private String hardLimitReachedTitle;
+	
+	@Value("${hitProcessorMessages.hardlimitreachedmessage")
+	private String hardLimitReachedMessage;
 
 	@Autowired
 	HitRepository hitRepository;
@@ -39,7 +47,8 @@ public class HitProcessor {
 	// warnings can be multiple
 	private List<TrippedLimitDto> trippedList = new ArrayList<>();
 	
-	private boolean tripped = false;
+	private boolean tripped = false; // for any type of limit reached
+	private boolean hardTrip = false; // only sets true if runUntilFinished was invoked (and will only hit one hard limit)
 	
 	public boolean isTripped() {
 		return tripped;
@@ -88,7 +97,7 @@ public class HitProcessor {
 				// if recorded, check if limit reached
 				if (recorded.get(p.getSeconds()) > p.getHits()) {
 					// limit reached
-					trippedStore(usageType, p, user);
+					trippedStore(usageType, p, user, runUntilTripped);
 				}
 			} else {
 				
@@ -104,7 +113,7 @@ public class HitProcessor {
 				
 				// Check if limit reached
 				if ( result > p.getHits() ) {
-					trippedStore(usageType, p, user);
+					trippedStore(usageType, p, user, runUntilTripped);
 					
 				}
 			}
@@ -120,17 +129,23 @@ public class HitProcessor {
 	 * @param parentLimit
 	 * @param user
 	 */
-	private void trippedStore(UsageType usageType, ParentLimit parentLimit, String user) {
+	private void trippedStore(UsageType usageType, ParentLimit parentLimit, String user, boolean runUntilTripped) {
 		trippedList.add(TrippedLimitDto.set(usageType, parentLimit, user));
-		if ( !tripped ) tripped = true;
+		if ( !tripped ) {
+			tripped = true;
+			if (runUntilTripped) hardTrip = true;
+		}
 	}
 	
 	/**
 	 * Converts the stored trips to a RestMessage for easy return.
+	 * 
+	 * A RestMessage is typically returned for all hits. It will be empty if no threshold hit.
+	 * 
 	 * @return
 	 */
 	public RestMessage toRestMessage() {
-		return RestMessage.build(
+		RestMessage rm = RestMessage.build(
 				trippedList.stream().collect(
 						Collectors.toMap(
 								TrippedLimitDto::getLimitName, 
@@ -138,6 +153,10 @@ public class HitProcessor {
 								(k1, k2) -> {
 									return k1 + " >>>> " + k2;
 								})));
+		if (hardTrip) {
+			rm.add(hardLimitReachedTitle, hardLimitReachedMessage);
+		}
+		return rm;
 			
 	}
 

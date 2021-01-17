@@ -29,6 +29,12 @@ public class HitService {
 	@Autowired
 	private ApplicationContext context;
 	
+	/**
+	 * Adds hit and then calls processHit to check thresholds.
+	 * 
+	 * @param newHit
+	 * @return
+	 */
 	public RestMessage addHit(Hit newHit) {
 		
 		Hit h = hitRepository

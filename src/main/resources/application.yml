@@ -31,3 +31,7 @@ logging:
       springframework: DEBUG
 
     com: debug
+hitProcessorMessages:
+  hardlimitreachedtitle: HARD LIMIT REACHED
+  hardlimitreachedmessage: true
+ 

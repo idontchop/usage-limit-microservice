@@ -1,6 +1,9 @@
 package com.idontchop.usagelimitservice.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,9 +18,41 @@ public class HitController {
 	@Autowired
 	HitService hitService;
 	
+	// Hard limit reached, matches title in rest message
+	@Value("${hitProcessorMessages.hardlimitreachedtitle")
+	private String hardLimitReachedTitle;
+	
+	/**
+	 * Adds hit and checks threshold. Returns proper restmessage if hit.
+	 * 
+	 * Returns 200 and empty json if no threshold reached.
+	 * 
+	 * Returns Status 202 if any threshold reached.
+	 * 
+	 * Returns 503 if hard limit reached
+	 * 
+	 * @param hit
+	 * @return
+	 */
 	@PostMapping("/hit")
-	public RestMessage hit(@RequestBody Hit hit) {
-		return hitService.addHit(hit);
+	public ResponseEntity<RestMessage> hit(@RequestBody Hit hit) {
+		
+		RestMessage restMessage =  hitService.addHit(hit);
+		
+		// Return 200 (no thresholds reached)
+		if (restMessage.isEmpty()) {
+			return ResponseEntity.ok(restMessage);
+			
+		// return 503, rest message contains a hard limit reached
+		} else if (restMessage.getMessages().containsKey(hardLimitReachedTitle)){
+			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+					.body(restMessage);
+		
+		// return 202, warning reached
+		} else {
+			return ResponseEntity.status(HttpStatus.ACCEPTED)
+					.body(restMessage);
+		}
 		
 	}
 
