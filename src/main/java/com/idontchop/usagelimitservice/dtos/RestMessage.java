@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 /**
@@ -30,6 +31,7 @@ public class RestMessage {
 		return rm;
 	}
 	
+	@JsonIgnore
 	public static RestMessage empty() {
 		return new RestMessage();
 	}
@@ -54,6 +56,7 @@ public class RestMessage {
 		this.messages = messages;
 	}
 
+	@JsonIgnore
 	public boolean isEmpty() {
 		return messages.isEmpty();
 	}

@@ -17,6 +17,7 @@ spring:
     name: usage-limit-service
 server:
   port: ${PORT:9450}
+  error.include-message: always
 eureka:
   client.serviceUrl.defaultZone: {$DISCOVERY_URI:http://localhost:8761/eureka}
   instance:

@@ -37,6 +37,11 @@ public class HitController {
 	@PostMapping("/hit")
 	public ResponseEntity<RestMessage> hit(@RequestBody Hit hit) {
 		
+		// hit should not have Id or numhits set
+		if (hit.getId() > 0L || hit.getNumHits() > 0L)
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(RestMessage.build("Incoming Hit malformed"));
+		
 		RestMessage restMessage =  hitService.addHit(hit);
 		
 		// Return 200 (no thresholds reached)
