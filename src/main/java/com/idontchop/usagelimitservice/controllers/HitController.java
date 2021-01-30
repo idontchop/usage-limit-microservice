@@ -50,7 +50,7 @@ public class HitController {
 			
 		// return 503, rest message contains a hard limit reached
 		} else if (restMessage.getMessages().containsKey(hardLimitReachedTitle)){
-			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+			return ResponseEntity.status(HttpStatus.FORBIDDEN)
 					.body(restMessage);
 		
 		// return 202, warning reached
